@@ -140,7 +140,7 @@ export class Game {
     this.camera.getWorldPosition(_v);
     let y = _v.y - this.laneRoot.position.y;
     if (!(y > 0.6 && y < 2.4)) y = 1.6;
-    if (force) this.headY = y; else this.headY = lerp(this.headY, y, 0.02);
+    if (force) this.headY = y; else this.headY = lerp(this.headY, y, 0.002); // slow: ducking under a wall must not move the rows
     this.obstacles.setLayout(this.headY);
     this.environment.setStrikeZone((this.obstacles.rowsY[0] + this.obstacles.rowsY[2]) / 2, 0.72, 0.46, this.obstacles.hitZ);
     this.hud.setHeight(this.headY);
@@ -293,6 +293,16 @@ export class Game {
     this.onEvent('settingsChanged');
   }
 
+  /** Re-render every canvas-based UI element (e.g. once web fonts have loaded). */
+  redrawUI() {
+    for (const p of [this.mainPanel, this.settingsPanel, this.pausePanel, this.resultsPanel, this.loadingPanel]) {
+      p.dirty = true;
+      for (const b of p.buttons) b.redraw();
+    }
+    this.hud.draw();
+    this.effects.popups.cache.clear();
+  }
+
   /** Called when the library changes (new song analysed, removed). */
   refreshLibrary() {
     if (!this.library.get(this.selectedTrackId)) this.selectedTrackId = this.library.tracks[0].id;
@@ -381,6 +391,7 @@ export class Game {
     } else {
       this.customSource = this.audio.playBuffer(buffer, startAt);
     }
+    this._setLoading(1, 'Ready');
     this.state = 'countdown';
     this.ui.enabled = false;
     this.gloves.clearTrails();
@@ -509,7 +520,7 @@ export class Game {
         const hand = slot.handedness === 'left' ? 'L' : slot.handedness === 'right' ? 'R' : null;
         if (!hand) continue;
         if (slot.isHand) this.gloves.driveFromHand(hand, slot.hand);
-        else this.gloves.driveFromObject(hand, slot.grip);
+        else this.gloves.driveFromObject(hand, slot.source && slot.source.gripSpace ? slot.grip : slot.controller);
       }
     }
     if (bot && (this.state === 'playing' || this.state === 'countdown' || this.state === 'resuming' || this.state === 'paused' || this.xrMode === 'desktop')) this._driveBot(dt);

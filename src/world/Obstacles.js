@@ -20,6 +20,7 @@ const _p = new THREE.Vector3();
 const _s = new THREE.Vector3();
 const _zero = new THREE.Matrix4().makeScale(0, 0, 0);
 const _c = new THREE.Color();
+const _e = new THREE.Euler();
 
 // ---------------------------------------------------------------- shaders
 const instancedHeader = /* glsl */`
@@ -326,7 +327,7 @@ export class Obstacles {
       if (!s.active) { this.orbs.setMatrixAt(i, _zero); this.shells.setMatrixAt(i, _zero); this.rings.setMatrixAt(i, _zero); this.tails.setMatrixAt(i, _zero); continue; }
       const near = THREE.MathUtils.clamp((s.z - this.spawnZ) / 10, 0, 1); // grows slightly when close for readability
       const sc = scale * (0.9 + near * 0.1);
-      _q.setFromEuler(new THREE.Euler(this.time * 0.9 + s.spin, this.time * 1.3 + s.spin, 0));
+      _q.setFromEuler(_e.set(this.time * 0.9 + s.spin, this.time * 1.3 + s.spin, 0));
       _m.compose(_p.set(s.x, s.y, s.z), _q, _s.set(sc, sc, sc));
       this.orbs.setMatrixAt(i, _m);
       _m.compose(_p, _q, _s.set(sc * 1.05, sc * 1.05, sc * 1.05));
@@ -359,7 +360,7 @@ export class Obstacles {
         if (s.stateTime > 0.12) s.active = false;
       }
       if (!s.active) { this.bombs.setMatrixAt(i, _zero); this.bombShells.setMatrixAt(i, _zero); continue; }
-      _q.setFromEuler(new THREE.Euler(this.time * 1.7 + s.spin, this.time * 2.1, s.spin));
+      _q.setFromEuler(_e.set(this.time * 1.7 + s.spin, this.time * 2.1, s.spin));
       _m.compose(_p.set(s.x, s.y, s.z), _q, _s.set(scale, scale, scale));
       this.bombs.setMatrixAt(i, _m);
       this.bombShells.setMatrixAt(i, _m);

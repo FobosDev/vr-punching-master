@@ -31,21 +31,25 @@ class Glove {
     const thumb = new THREE.Mesh(new THREE.SphereGeometry(0.036, 16, 12), this.bodyMat);
     thumb.position.set(hand === 'L' ? 0.072 : -0.072, 0.005, 0.015);
     thumb.scale.set(1, 0.9, 1.3);
-    this.cuffMat = new THREE.MeshStandardMaterial({ color: tint.clone().multiplyScalar(0.35), roughness: 0.55, metalness: 0.15, emissive: tint, emissiveIntensity: 0.05 });
-    const cuff = new THREE.Mesh(new THREE.CylinderGeometry(0.058, 0.066, 0.06, 24), this.cuffMat);
+    // Padded wrist seen from the wearer's side, then a short dark cuff with two light bands.
+    const wrist = new THREE.Mesh(new THREE.SphereGeometry(0.062, 24, 16), this.bodyMat);
+    wrist.position.z = 0.075;
+    wrist.scale.set(1, 0.95, 0.8);
+    this.cuffMat = new THREE.MeshStandardMaterial({ color: tint.clone().multiplyScalar(0.35), roughness: 0.55, metalness: 0.15, emissive: tint, emissiveIntensity: 0.05, side: THREE.DoubleSide });
+    const cuff = new THREE.Mesh(new THREE.CylinderGeometry(0.056, 0.06, 0.05, 24, 1, true), this.cuffMat);
     cuff.rotation.x = Math.PI / 2;
-    cuff.position.z = 0.09;
+    cuff.position.z = 0.1;
     this.bandMat = new THREE.MeshBasicMaterial({ color: tint.clone().lerp(new THREE.Color(1, 1, 1), 0.35) });
     const band = new THREE.Mesh(new THREE.TorusGeometry(0.069, 0.009, 10, 40), this.bandMat);
     band.position.z = 0.055;
-    const band2 = new THREE.Mesh(new THREE.TorusGeometry(0.066, 0.006, 10, 40), this.bandMat);
-    band2.position.z = 0.115;
+    const band2 = new THREE.Mesh(new THREE.TorusGeometry(0.06, 0.006, 10, 40), this.bandMat);
+    band2.position.z = 0.12;
     // Knuckle ridge
     const ridge = new THREE.Mesh(new THREE.TorusGeometry(0.06, 0.012, 10, 32, Math.PI), new THREE.MeshStandardMaterial({ color: tint.clone().multiplyScalar(0.7), roughness: 0.3, metalness: 0.1, emissive: tint, emissiveIntensity: 0.15 }));
     ridge.position.set(0, 0.03, -0.065);
     ridge.rotation.x = Math.PI / 2;
     this.halo = makeHaloSprite(tint.getStyle(), 0.3, 0.25);
-    this.group.add(body, thumb, cuff, band, band2, ridge, this.halo);
+    this.group.add(body, thumb, wrist, cuff, band, band2, ridge, this.halo);
     this.model = this.group;
 
     // Motion state ------------------------------------------------------
@@ -87,6 +91,7 @@ class Glove {
     this.bodyMat.emissive.copy(color);
     this.cuffMat.color.copy(color).multiplyScalar(0.35);
     this.cuffMat.emissive.copy(color);
+    this.cuffMat.side = THREE.DoubleSide;
     this.bandMat.color.copy(color).lerp(new THREE.Color(1, 1, 1), 0.35);
     this.halo.material.color.copy(color);
     this.trailMat.uniforms.uColor.value.copy(color);

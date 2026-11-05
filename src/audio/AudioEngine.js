@@ -25,9 +25,9 @@ export class AudioEngine {
     this.master = ctx.createGain();
     this.master.gain.value = 1;
     this.limiter = ctx.createDynamicsCompressor();
-    this.limiter.threshold.value = -6;
-    this.limiter.knee.value = 8;
-    this.limiter.ratio.value = 12;
+    this.limiter.threshold.value = -8;
+    this.limiter.knee.value = 6;
+    this.limiter.ratio.value = 20;
     this.limiter.attack.value = 0.003;
     this.limiter.release.value = 0.12;
     this.master.connect(this.limiter).connect(ctx.destination);

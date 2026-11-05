@@ -42,6 +42,7 @@ class App {
     this.page = new PageUI({ library: this.library, settings: this.settings, game: this.game, onEnter: (mode) => this.enter(mode), onSettingsChanged: () => { this.game.applySettings(); saveSettings(this.settings); } });
 
     this.detectXR();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => this.game.redrawUI()).catch(() => {});
     this.bindDesktopControls();
     window.addEventListener('resize', () => this.resize());
     document.addEventListener('visibilitychange', () => { if (document.hidden) this.game.pause(); });

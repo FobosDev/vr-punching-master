@@ -12,7 +12,7 @@ export class Synth {
 
     // Buses -------------------------------------------------------------
     this.out = ctx.createGain();           // everything -> music bus
-    this.out.gain.value = 0.85;
+    this.out.gain.value = 0.72;
     this.out.connect(engine.musicBus);
 
     this.duck = ctx.createGain();          // side-chain "pump" for bass + synths
@@ -104,7 +104,7 @@ export class Synth {
     o.frequency.exponentialRampToValueAtTime(opts.sub ? 38 : 48, t + 0.1);
     const g = ctx.createGain();
     g.gain.setValueAtTime(0.0001, t);
-    g.gain.linearRampToValueAtTime(1.1 * vel, t + 0.003);
+    g.gain.linearRampToValueAtTime(0.95 * vel, t + 0.003);
     g.gain.exponentialRampToValueAtTime(0.0001, t + (opts.long ? 0.6 : 0.38));
     o.connect(g).connect(this.drumBus);
     o.start(t); o.stop(t + 0.7);

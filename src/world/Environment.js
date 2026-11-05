@@ -7,6 +7,11 @@ import * as THREE from 'three';
 import { COLORS, makeGridMaterial, makeSkyMaterial, makeSunMaterial, makeHaloSprite, getSoftSpriteTexture, makeEnvironmentCubeMap } from './Materials.js';
 import { makeRng } from '../util/math.js';
 
+const _m = new THREE.Matrix4();
+const _q = new THREE.Quaternion();
+const _p = new THREE.Vector3();
+const _s = new THREE.Vector3();
+
 export class Environment {
   /**
    * @param {THREE.Scene} scene
@@ -328,10 +333,7 @@ export class Environment {
       this.ridgeLine.material.color.copy(COLORS.left).lerp(this.flashColor, this.flashAmount);
       // Towers breathe with the bass.
       if (!this.reducedMotion) {
-        const m = new THREE.Matrix4();
-        const q = new THREE.Quaternion();
-        const p = new THREE.Vector3();
-        const s = new THREE.Vector3();
+        const m = _m, q = _q, p = _p, s = _s;
         const data = this.towerData;
         const stride = 3; // update a third of the towers per frame
         const off = Math.floor(this.time * 60) % stride;
@@ -361,7 +363,7 @@ export class Environment {
 
     // Chevrons conveyor.
     {
-      const m = new THREE.Matrix4();
+      const m = _m;
       const spacing = 48 / this.chevronCount;
       for (let i = 0; i < this.chevronCount; i++) {
         let z = ((i * spacing + scroll) % 48);
