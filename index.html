@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Punching Master VR</title>
+  <meta name="description" content="A rhythm boxing game for Meta Quest 3 in the browser. Punch neon targets to the beat, in VR or in passthrough." />
+  <meta name="theme-color" content="#07030f" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='26' fill='%2300e5ff'/%3E%3Ccircle cx='32' cy='32' r='14' fill='%23ff2d95'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Orbitron:wght@600;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./style.css" />
+  <script type="importmap">
+    { "imports": { "three": "./vendor/three/three.module.js" } }
+  </script>
+</head>
+<body>
+  <canvas id="gl"></canvas>
+
+  <div id="page" class="page">
+    <header class="hero">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"><span class="l"></span><span class="r"></span></div>
+        <div>
+          <h1>PUNCHING <span>MASTER</span></h1>
+          <p class="tag">Rhythm boxing for Meta Quest 3 &mdash; in your browser. Punch the beat, dodge the walls, chase the combo.</p>
+        </div>
+      </div>
+      <div class="xr-status" id="xrStatus">Checking WebXR support&hellip;</div>
+    </header>
+
+    <main class="grid">
+      <section class="card tracks">
+        <div class="card-head">
+          <h2>Tracks</h2>
+          <div class="head-actions">
+            <button id="addMp3" class="btn small ghost" type="button">+ Add your MP3</button>
+            <input id="fileInput" type="file" accept="audio/*,.mp3,.m4a,.ogg,.wav,.flac" multiple hidden />
+          </div>
+        </div>
+        <ul id="trackList" class="track-list" role="listbox" aria-label="Tracks"></ul>
+        <p class="hint">Built-in tracks are generated live by the game's synth engine. Your own songs are analysed on this device and never uploaded.</p>
+      </section>
+
+      <section class="card play">
+        <h2>Difficulty</h2>
+        <div class="seg" id="difficulty" role="radiogroup" aria-label="Difficulty">
+          <button type="button" data-diff="easy">Easy</button>
+          <button type="button" data-diff="normal" class="active">Normal</button>
+          <button type="button" data-diff="hard">Hard</button>
+          <button type="button" data-diff="expert">Expert</button>
+        </div>
+        <p id="diffHint" class="hint"></p>
+
+        <h2>Play</h2>
+        <div class="modes">
+          <button id="enterVR" class="btn primary" type="button" disabled>
+            <strong>Enter VR</strong><span>Neon arena</span>
+          </button>
+          <button id="enterAR" class="btn primary alt" type="button" disabled>
+            <strong>Enter Passthrough</strong><span>Immersive mixed reality</span>
+          </button>
+          <button id="enterDesktop" class="btn ghost" type="button">
+            <strong>Desktop preview</strong><span>Auto-play demo, no headset</span>
+          </button>
+        </div>
+        <div id="progressWrap" class="progress" hidden>
+          <div class="bar"><div id="progressBar"></div></div>
+          <div id="progressLabel">Analysing&hellip;</div>
+        </div>
+        <div id="best" class="best"></div>
+      </section>
+
+      <section class="card settings">
+        <h2>Settings</h2>
+        <label class="row">
+          <span>Music volume</span>
+          <input id="musicVol" type="range" min="0" max="100" value="80" />
+        </label>
+        <label class="row">
+          <span>Effects volume</span>
+          <input id="sfxVol" type="range" min="0" max="100" value="90" />
+        </label>
+        <label class="row">
+          <span>Audio offset <small id="offsetVal">0 ms</small></span>
+          <input id="offset" type="range" min="-200" max="200" step="5" value="0" />
+        </label>
+        <label class="row check"><input id="noFail" type="checkbox" /><span>No-fail mode (never lose on low health)</span></label>
+        <label class="row check"><input id="haptics" type="checkbox" checked /><span>Controller vibration</span></label>
+        <label class="row check"><input id="reducedMotion" type="checkbox" /><span>Reduced motion (calmer environment)</span></label>
+        <label class="row check"><input id="swapHands" type="checkbox" /><span>Swap glove colours (left-handed)</span></label>
+        <label class="row check"><input id="autoplay" type="checkbox" /><span>Auto-play bot (watch the game play itself)</span></label>
+      </section>
+
+      <section class="card help">
+        <h2>How to play</h2>
+        <ul class="help-list">
+          <li><b class="pink">Pink targets</b> &rarr; punch with your <b class="pink">left</b> glove. <b class="cyan">Cyan targets</b> &rarr; <b class="cyan">right</b> glove. <b class="gold">Gold</b> &rarr; either.</li>
+          <li>Hit them as they cross the glowing <b>strike zone</b> in front of you. A real punch counts; a gentle touch does not.</li>
+          <li><b class="red">Red spiked bombs</b>: don't touch. <b class="red">Red walls</b>: lean or duck out of the way.</li>
+          <li>Point at menus with a controller and pull the trigger. Press <b>B</b> or <b>Y</b> to pause. Hand tracking works too: pinch to select.</li>
+          <li>Needs a Meta Quest 3 (or any WebXR headset) over HTTPS. Passthrough mode uses the headset cameras so you can play in your room.</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer class="foot">
+      <span>Built with Three.js &amp; WebXR. Everything runs locally in your browser.</span>
+      <a href="https://github.com/FobosDev/vr-punching-master" target="_blank" rel="noopener">Source</a>
+    </footer>
+  </div>
+
+  <div id="desktopHud" class="desktop-hud" hidden>
+    <button id="exitDesktop" class="btn small ghost" type="button">&larr; Back to menu</button>
+    <span class="desktop-hint">Drag to look around. Menus: click them. Press Esc to leave.</span>
+  </div>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

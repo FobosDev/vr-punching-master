@@ -1,0 +1,19 @@
+{
+  "name": "punching-master-vr",
+  "version": "1.0.0",
+  "description": "Rhythm boxing game for Meta Quest 3 in the browser (WebXR + Three.js). Punch neon targets to the beat, in VR or passthrough.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "node scripts/serve.mjs 8080",
+    "serve": "node scripts/serve.mjs 8080",
+    "test": "node test/beatmap.test.mjs",
+    "test:e2e": "node test/make-fixture.mjs && node test/e2e.mjs",
+    "fixture": "node test/make-fixture.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.63.0"
+  },
+  "engines": { "node": ">=18" },
+  "license": "MIT"
+}
