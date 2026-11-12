@@ -33,9 +33,14 @@ No app store, no install: open the page in the Quest Browser and press *Enter VR
 
 WebXR requires a secure origin (`https://` or `localhost`). Pick one:
 
-1. **GitHub Pages (easiest).** This repository ships a workflow (`.github/workflows/pages.yml`).
-   In the repository settings enable *Pages → Source: GitHub Actions*, push to `main`, and open
-   the published URL in the Quest Browser.
+1. **GitHub Pages (easiest).** This repository ships its own deploy workflow
+   (`.github/workflows/pages.yml`), so there is nothing to build:
+   - In *Settings → Pages → Build and deployment*, set **Source** to **GitHub Actions**.
+     Don't click *Configure* on the suggested Jekyll or Static HTML workflows.
+   - Every push to the default branch tests and publishes the game. To publish by hand, open
+     *Actions → Deploy to GitHub Pages → Run workflow*.
+   - The game appears at `https://<user>.github.io/<repository>/` (shown on the workflow run
+     and in *Settings → Pages*). Open that address in the Quest Browser.
 2. **Local dev server + ADB.** Run the server on your computer and forward the port to the
    headset so it is reachable as `localhost` (which browsers treat as secure):
 
